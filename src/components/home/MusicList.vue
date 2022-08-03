@@ -4,11 +4,32 @@
        <div class="title">发现好歌单</div>
        <div class="more">查看更多</div>
      </div>
+     <div class="musicContent">
+       <van-swipe :loop="false" :width="150" class="my-swipe" :show-indicators="false">
+         <van-swipe-item v-for="item in musicList" :key="item">
+           <router-link :to="{path:'/itemMusic',query:{id:item.id}}">
+           <div style="position: relative">
+             <img :src="item.picUrl" alt="" />
+             <span class="playCount" >
+               <i class="bi bi-play-circle"></i>
+               <i class="">{{changeCount(item.playCount)}}</i>
+             </span>
+             <span  class="name">{{item.name}}</span>
+           </div>
+           </router-link>
+
+
+         </van-swipe-item>
+
+       </van-swipe>
+
+     </div>
    </div>
 </template>
 
 <script>
 import {getMusicList} from "@/request/api/home";
+import {reactive,onMounted} from "vue";
 export default {
   data(){
     return {
@@ -19,11 +40,42 @@ export default {
     async getSongsList(){
       let res = await getMusicList();
       console.log(res);
+      this.musicList =res.data.result
     },
+    changeCount:function(num){
+      if(num>=100000000){
+        return(num/100000000).toFixed(1)+"亿"
+      }else if(num>=10000){
+        return(num/10000).toFixed(1)+"万"
+      }
+    }
   },
   mounted(){
     this.getSongsList()
-  }
+  },
+
+  /**
+   * Vue3
+   */
+  // setup(){
+  //   const state = reactive({
+  //     musicList:[],
+  //   });
+  //    function changeCount(num){
+  //         if(num>=100000000){
+  //           return(num/100000000).toFixed(1)+"亿"
+  //         }else if(num>=10000){
+  //           return(num/10000).toFixed(1)+"万"
+  //         }
+  //       }
+  //   onMounted(async()=>{
+  //     let res = await  getMusicList();
+  //     console.log(res);
+  //     state.musicList = res.data.result;
+  //   });
+  //   return { state,changeCount};
+  // },
+
 };
 </script>
 <style lang="less" scoped>
@@ -46,11 +98,34 @@ export default {
     border:1px solid #cccccc;
     text-align: center;
     line-height: 0.6rem;
-    paddingL: 0 0.2rem;
+    padding: 0 0.2rem;
     border-radius: 0.4rem;
   }
 }
+   .musicContent{
+     width: 100%;
+     height: 200px;
+   }
+   .my-swipe{
+      height: 100%;
+      img{
+        width: 98%;
+        height: 130px;
 
+        padding: 2px;
+      }
+   }
+   .name{
+     display: inline-block;
+     width: 100%;
+     height: 50px;
+   }
+
+   .playCount{
+     position: absolute;
+     top:0px;
+     right: 5px
+   }
 
 </style>
 
